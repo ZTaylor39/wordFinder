@@ -1,4 +1,7 @@
+from constants import *
+
 class Tile:
+    """A class representing a letter tile in word games like Scrabble and Words With Friends."""
     
     def __init__(self, letter: str, scrabbleValue: int, scrabbleNum: int, wwfValue: int, wwfNum: int):
         self.letter = letter
@@ -7,12 +10,14 @@ class Tile:
         self.wwfValue = wwfValue
         self.wwfNum = wwfNum
 
-    def getValue(self, mode = "wwf") -> int:
-        if mode == "scrabble":
+    def getValue(self, mode: Mode = DEFAULT_MODE) -> int:
+        """Returns the point value of the tile based on the game mode."""
+        if mode == Mode.SCRABBLE:
             return self.scrabbleValue
         return self.wwfValue
 
 
+# Don't change these values unless the rules of Scrabble or WWF change!
 tiles = {
     'A' : Tile('A', 1, 9, 1, 9),
     'B' : Tile('B', 3, 2, 4, 2),
@@ -42,3 +47,16 @@ tiles = {
     'Z' : Tile('Z', 10, 1, 10, 1),
     ' ' : Tile('_', 0, 2, 0, 2)
 }
+
+
+def getWordScore(word: str, mode: Mode = DEFAULT_MODE) -> int:
+    """
+    Calculates the total score of a word based on the game mode. 
+    Letters in lowercase are considered blank tiles and contribute 0 points. 
+    Non-alphabetic characters are ignored.
+    """
+    value = 0
+    for letter in word:
+        if letter.isupper():
+            value += tiles[letter].getValue(mode)
+    return value
