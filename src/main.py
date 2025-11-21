@@ -48,10 +48,15 @@ def extractAlphaFromRegex(boardRegex: str) -> list:
     return output
 
 def wordFitsRegex(word: str, boardRegex: str) -> bool:
-    """Checks if a word fits the given board regex in general and in specific placement of board letters."""
+    """
+    Checks if a word fits the given board regex in general and in specific placement of board letters.
+    """
+
+    # General case
     if not re.search(boardRegex, word.replace("(", "").replace(")", "")):
         return False
         
+    # Specific placement of board letters
     dumbRegex = boardRegex.replace("\\w", " ")
     dumbWord = ""
     letterComesFromBoard = False
@@ -65,6 +70,30 @@ def wordFitsRegex(word: str, boardRegex: str) -> bool:
         else :
             dumbWord += " "
     return re.search(dumbRegex, dumbWord) is not None
+
+def keep_only_first_open_and_last_close(s: str) -> str:
+    """
+    Keeps only the first opening parenthesis and the last closing parenthesis in the string.
+    """
+    first_open_kept = False
+    last_close_index = s.rfind(")")
+
+    result = []
+
+    for i, ch in enumerate(s):
+        if ch == "(":
+            if not first_open_kept:
+                result.append(ch)
+                first_open_kept = True
+            # else: skip (remove)
+        elif ch == ")":
+            if i == last_close_index:
+                result.append(ch)
+            # else: skip (remove)
+        else:
+            result.append(ch)
+
+    return "".join(result)
 
 def getWordsByIteratingOverRacks(rack: str, boardRegex: str = "", mode: Mode = DEFAULT_MODE) -> set:
     """
@@ -80,7 +109,7 @@ def getWordsByIteratingOverRacks(rack: str, boardRegex: str = "", mode: Mode = D
     playableWords = [''.join(p) for r in range(1, len(rack)+len(extractAlphaFromRegex(boardRegex))+1) for p in itertools.permutations(list(rack)+extractAlphaFromRegex(boardRegex), r)]    
 
     # Remove permutations that are not valid words or don't match the board regex
-    validPlayableWords = set([WordResult(word.replace(")(", ""), mode) for word in playableWords if isWordValid(word, mode) and wordFitsRegex(word, boardRegex)])
+    validPlayableWords = set([WordResult(keep_only_first_open_and_last_close(word), mode) for word in playableWords if isWordValid(word, mode) and wordFitsRegex(word, boardRegex)])
 
     return validPlayableWords
 
