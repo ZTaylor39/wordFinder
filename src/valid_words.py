@@ -32,6 +32,7 @@ def getNumValidWords(mode: Mode = DEFAULT_MODE) -> int:
 
 def isWordValid(word: str, mode: Mode = DEFAULT_MODE) -> bool:
     """Checks if a word is valid based on the game mode."""
+    sanitizedWord = word.upper().replace("(", "").replace(")", "")
     if mode == Mode.SCRABBLE:
-        return word.upper() in scrabbleWords
-    return word.upper() in wwfWords
+        return sanitizedWord in scrabbleWords
+    return sanitizedWord in wwfWords
